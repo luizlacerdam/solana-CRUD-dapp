@@ -33,6 +33,27 @@ pub mod cruddapp {
 
         Ok(())
     }
+
+    pub fn delete_journal_entry(_ctx: Context<DeleteEntry>, _title: String) -> Result<()> {
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+#[instruction(title: String)]
+pub struct DeleteEntry<'info> {
+    #[account(
+      mut,
+      seeds = [journal_entry.title.as_bytes(), owner.key().as_ref()],
+      bump,
+      close = owner,
+    )]
+    pub journal_entry: Account<'info, JornalEntryState>,
+
+    #[account(mut)]
+    pub owner: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
