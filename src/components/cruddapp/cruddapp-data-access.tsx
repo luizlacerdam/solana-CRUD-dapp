@@ -10,6 +10,12 @@ import { useCluster } from '../cluster/cluster-data-access'
 import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
 
+export interface CreateEntryArgs {
+  title: string
+  message: string
+  owner: PublicKey
+}
+
 export function useCruddappProgram() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
@@ -20,7 +26,7 @@ export function useCruddappProgram() {
 
   const accounts = useQuery({
     queryKey: ['cruddapp', 'all', { cluster }],
-    queryFn: () => program.account.cruddapp.all(),
+    queryFn: () => program.account.jornalEntryState.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -28,77 +34,71 @@ export function useCruddappProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   })
 
-  const initialize = useMutation({
-    mutationKey: ['cruddapp', 'initialize', { cluster }],
-    mutationFn: (keypair: Keypair) =>
-      program.methods.initialize().accounts({ cruddapp: keypair.publicKey }).signers([keypair]).rpc(),
+
+  const  createEntry = useMutation<string, Error, CreateEntryArgs>({
+    mutationKey: ['journalEntry', 'create', { cluster }],
+    mutationFn: async ({ title, message, owner }) => {
+      return program.methods.createJournalEntry(title, message).rpc()
+    },
     onSuccess: (signature) => {
       transactionToast(signature)
-      return accounts.refetch()
+      accounts.refetch()
     },
-    onError: () => toast.error('Failed to initialize account'),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   })
 
   return {
     program,
-    programId,
     accounts,
     getProgramAccount,
-    initialize,
+    createEntry,
+    programId,
   }
 }
 
 export function useCruddappProgramAccount({ account }: { account: PublicKey }) {
+  const programId = new PublicKey(
+    "EnHt7CZy8bHeTRJ3RXMYxb6BnkzctJ2HNNuiq58rHQPf"
+  );
   const { cluster } = useCluster()
   const transactionToast = useTransactionToast()
   const { program, accounts } = useCruddappProgram()
 
   const accountQuery = useQuery({
     queryKey: ['cruddapp', 'fetch', { cluster, account }],
-    queryFn: () => program.account.cruddapp.fetch(account),
+    queryFn: () => program.account.jornalEntryState.fetch(account),
   })
 
-  const closeMutation = useMutation({
-    mutationKey: ['cruddapp', 'close', { cluster, account }],
-    mutationFn: () => program.methods.close().accounts({ cruddapp: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accounts.refetch()
+  const updateEntry = useMutation<string, Error, CreateEntryArgs>({
+    mutationKey: ['journalEntry', 'update', { cluster }],
+    mutationFn: async ({ title, message, owner }) => {
+      return program.methods.updateJournalEntry(title, message).rpc();
+    },
+    onSuccess: (signature) => {
+      transactionToast(signature)
+      accounts.refetch()
+    },
+    onError: (error) => { 
+      toast.error(error.message);
     },
   })
 
-  const decrementMutation = useMutation({
-    mutationKey: ['cruddapp', 'decrement', { cluster, account }],
-    mutationFn: () => program.methods.decrement().accounts({ cruddapp: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
+  const deleteEntry = useMutation({
+    mutationKey: ['journalEntry', 'delete', { cluster }],
+    mutationFn: async (title: string) => {
+      return program.methods.deleteJournalEntry(title).rpc()
     },
-  })
-
-  const incrementMutation = useMutation({
-    mutationKey: ['cruddapp', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.increment().accounts({ cruddapp: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
-    },
-  })
-
-  const setMutation = useMutation({
-    mutationKey: ['cruddapp', 'set', { cluster, account }],
-    mutationFn: (value: number) => program.methods.set(value).accounts({ cruddapp: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
+    onSuccess: (signature) => {
+      transactionToast(signature)
+      accounts.refetch()
     },
   })
 
   return {
     accountQuery,
-    closeMutation,
-    decrementMutation,
-    incrementMutation,
-    setMutation,
+    updateEntry,
+    deleteEntry,
   }
 }
