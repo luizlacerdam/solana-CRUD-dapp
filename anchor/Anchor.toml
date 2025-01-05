@@ -5,14 +5,14 @@ anchor_version = "0.30.1"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-cruddapp = "EnHt7CZy8bHeTRJ3RXMYxb6BnkzctJ2HNNuiq58rHQPf"
+[programs.devnet]
+cruddapp = "8vwXdXUQ5TzqsDAadkzmN8gXkfGoePZ5pPSpqdrrb5g5"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "https://api.devnet.solana.com"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
