@@ -76,9 +76,8 @@
           "pda": {
             "seeds": [
               {
-                "kind": "account",
-                "path": "journal_entry.title",
-                "account": "JornalEntryState"
+                "kind": "arg",
+                "path": "title"
               },
               {
                 "kind": "account",
@@ -123,9 +122,8 @@
           "pda": {
             "seeds": [
               {
-                "kind": "account",
-                "path": "journal_entry.title",
-                "account": "JornalEntryState"
+                "kind": "arg",
+                "path": "title"
               },
               {
                 "kind": "account",

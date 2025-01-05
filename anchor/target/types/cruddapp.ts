@@ -82,9 +82,8 @@ export type Cruddapp = {
           "pda": {
             "seeds": [
               {
-                "kind": "account",
-                "path": "journal_entry.title",
-                "account": "jornalEntryState"
+                "kind": "arg",
+                "path": "title"
               },
               {
                 "kind": "account",
@@ -129,9 +128,8 @@ export type Cruddapp = {
           "pda": {
             "seeds": [
               {
-                "kind": "account",
-                "path": "journal_entry.title",
-                "account": "jornalEntryState"
+                "kind": "arg",
+                "path": "title"
               },
               {
                 "kind": "account",

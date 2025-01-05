@@ -44,7 +44,7 @@ pub mod cruddapp {
 pub struct DeleteEntry<'info> {
     #[account(
       mut,
-      seeds = [journal_entry.title.as_bytes(), owner.key().as_ref()],
+      seeds = [title.as_bytes(), owner.key().as_ref()],
       bump,
       close = owner,
     )]
@@ -61,7 +61,7 @@ pub struct DeleteEntry<'info> {
 pub struct UpdateEntry<'info> {
     #[account(
       mut,
-      seeds = [journal_entry.title.as_bytes(), owner.key().as_ref()],
+      seeds = [title.as_bytes(), owner.key().as_ref()],
       bump,
       realloc = ANCHOR_DISCRIMINATOR_SPACE + JornalEntryState::INIT_SPACE,
       realloc::payer = owner,
